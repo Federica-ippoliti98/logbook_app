@@ -1,0 +1,28 @@
+/* src/styles/variables.css */
+:root[data-theme="dark"] {
+  --bg: #0D0E10;
+  --card: #16181C;
+  --border: #2A2E35;
+  --accent: #C8F03C;       /* Lime */
+  --accent-fill: #C8F03C;
+  --on-accent: #0D0E10;    /* Testo scuro su fondo lime */
+  --text: #FFFFFF;
+}
+
+:root[data-theme="light"] {
+  --bg: #F4F5F1;
+  --card: #FFFFFF;
+  --border: #DDE0D8;
+  --accent: #5A7500;       /* Verde oliva per i testi */
+  --accent-fill: #BEE635;  /* Lime leggermente adattato per i bottoni */
+  --on-accent: #0D0E10;
+  --text: #0D0E10;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow Condensed', sans-serif; /* Importalo nel tuo index.html se vuoi i font della guida */
+  transition: background-color 0.3s, color 0.3s;
+}
