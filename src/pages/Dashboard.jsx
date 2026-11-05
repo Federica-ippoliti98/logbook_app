@@ -232,7 +232,7 @@ export function Dashboard() {
 
       if (error) throw error;
       setSessioneAttiva(null);
-      setEvisSessione([]);
+      setEserciziSessione([]);
       alert("Allenamento completato con successo! Ottimo lavoro.");
     } catch (err) {
       alert(err.message);

@@ -16,6 +16,9 @@ import { AppLayout } from './components/AppLayout';
 import { Login } from './pages/Login';
 import { Schede } from './pages/Schede';
 import { RestTimerProvider } from './context/RestTimerContext';
+import { Dashboard } from './pages/Dashboard';
+import { Storico } from './pages/Storico';
+
 
 
 
@@ -29,8 +32,8 @@ import { RestTimerProvider } from './context/RestTimerContext';
 // ============================================================================
 // Componenti segnaposto temporanei per i test
 
-const Dashboard = () => <h2>Sezione Allenati</h2>;
-const Storico = () => <h2>Storico Allenamenti</h2>;
+
+
 const AnalisiIA = () => <h2>Analisi Avanzata IA</h2>;
 
 // ============================================================================
