@@ -15,6 +15,8 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { AppLayout } from './components/AppLayout';
 import { Login } from './pages/Login';
 import { Schede } from './pages/Schede';
+import { RestTimerProvider } from './context/RestTimerContext';
+
 
 
 // ============================================================================
@@ -101,36 +103,38 @@ export default function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <BrowserRouter>
-          {/* ============================================================================
-              TAPPA 5: Definizione dell'Albero delle Rotte Pubbliche e Protette
-              OBIETTIVO: Mappare le corrispondenze tra i percorsi URL e i rispettivi componenti visivi, blindando i percorsi privati.
-              TEORIA DA STUDIARE PRIMA:
-              - Gestore <Routes> e Nodi <Route>: Istruzioni di React Router per raggruppare i percorsi e dichiarare i parametri path ed element.
-              - Rotte Annidate (Nested Routing): Utilizzo di una rotta genitore come layout strutturale comune per un gruppo di sotto-rotte.
-              - Indice di Rotta (index): Configurare la vista di default che appare quando il percorso corrisponde esattamente al path del genitore.
-              - Composizione del Guardiano: Inserire il componente di layout direttamente dentro al guardiano <ProtectedRoute> nell'attributo element della rotta genitore.
-              PASSAGGI LOGICI:
-              1. Aprire il contenitore globale <Routes>.
-              2. Configurare la rotta isolata e pubblica path="/login" assegnandole il componente Login.
-              3. Creare la rotta radice privata path="/" avvolgendo il layout <AppLayout /> all'interno del guardiano <ProtectedRoute>.
-              4. All'interno della rotta radice privata, inserire le sotto-rotte figlie: configurare Dashboard come "index", e assegnare i path relativi per storico, schede, analisi e profilo.
-              • Errori da evitare: Inserire uno slash iniziale (es. path="/profilo") nelle rotte figlie annidate, rompendo la risoluzione automatica dei percorsi relativi di React Router.
-              ============================================================================ */}
-          <Routes>
-            {/* Rotte Pubbliche */}
-            <Route path="/login" element={<Login />} />
+        <RestTimerProvider>
+          <BrowserRouter>
+            {/* ============================================================================
+                TAPPA 5: Definizione dell'Albero delle Rotte Pubbliche e Protette
+                OBIETTIVO: Mappare le corrispondenze tra i percorsi URL e i rispettivi componenti visivi, blindando i percorsi privati.
+                TEORIA DA STUDIARE PRIMA:
+                - Gestore <Routes> e Nodi <Route>: Istruzioni di React Router per raggruppare i percorsi e dichiarare i parametri path ed element.
+                - Rotte Annidate (Nested Routing): Utilizzo di una rotta genitore come layout strutturale comune per un gruppo di sotto-rotte.
+                - Indice di Rotta (index): Configurare la vista di default che appare quando il percorso corrisponde esattamente al path del genitore.
+                - Composizione del Guardiano: Inserire il componente di layout direttamente dentro al guardiano <ProtectedRoute> nell'attributo element della rotta genitore.
+                PASSAGGI LOGICI:
+                1. Aprire il contenitore globale <Routes>.
+                2. Configurare la rotta isolata e pubblica path="/login" assegnandole il componente Login.
+                3. Creare la rotta radice privata path="/" avvolgendo il layout <AppLayout /> all'interno del guardiano <ProtectedRoute>.
+                4. All'interno della rotta radice privata, inserire le sotto-rotte figlie: configurare Dashboard come "index", e assegnare i path relativi per storico, schede, analisi e profilo.
+                • Errori da evitare: Inserire uno slash iniziale (es. path="/profilo") nelle rotte figlie annidate, rompendo la risoluzione automatica dei percorsi relativi di React Router.
+                ============================================================================ */}
+            <Routes>
+              {/* Rotte Pubbliche */}
+              <Route path="/login" element={<Login />} />
 
-            {/* Rotte Protette all'interno del Layout Navigabile */}
-            <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-              <Route index element={<Dashboard />} />
-              <Route path="storico" element={<Storico />} />
-              <Route path="schede" element={<Schede />} />
-              <Route path="analisi" element={<AnalisiIA />} />
-              <Route path="profilo" element={<Profilo />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+              {/* Rotte Protette all'interno del Layout Navigabile */}
+              <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                <Route index element={<Dashboard />} />
+                <Route path="storico" element={<Storico />} />
+                <Route path="schede" element={<Schede />} />
+                <Route path="analisi" element={<AnalisiIA />} />
+                <Route path="profilo" element={<Profilo />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </RestTimerProvider>
       </ThemeProvider>
     </AuthProvider>
   );

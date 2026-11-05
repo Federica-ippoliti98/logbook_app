@@ -1,0 +1,106 @@
+.dashboard-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.subtitle {
+  opacity: 0.8;
+  margin-bottom: 20px;
+}
+.start-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.start-card h3 {
+  margin: 0;
+  color: var(--accent);
+}
+.btn-start {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.workout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background: var(--card);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.live-badge {
+  background: #ff6b6b;
+  color: white;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+.btn-end-workout {
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.esercizio-workout-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.esercizio-workout-card h4 {
+  margin: 0 0 12px 0;
+  font-size: 1.2rem;
+}
+.log-row-inputs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.log-row-inputs input {
+  width: 30%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px;
+  border-radius: 6px;
+  text-align: center;
+}
+.btn-save-set {
+  flex: 1;
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.sets-done-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.set-badge {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
