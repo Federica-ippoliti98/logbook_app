@@ -1,296 +1,282 @@
 // ============================================================================
-// TAPPA 1: Importazione delle Dipendenze (import)
-// OBIETTIVO: Importare gli hook di stato e di ciclo di vita di React, il client di Supabase e gli stili dedicati.
+// TAPPA 1: Importazione delle Dipendenze Core, Router, Client e Stili
+// OBIETTIVO: Caricare gli hook di stato, l'SDK di Supabase, gli strumenti di navigazione tra le rotte e i fogli di stile associati al layout.
 // TEORIA DA STUDIARE PRIMA:
-// - Hook Integrati (Core Hooks): Ruolo combinato di useState ed useEffect per il recupero dati al caricamento.
+// - Navigazione Single Page Application (SPA): Utilizzare l'hook `useNavigate` per reindirizzare programmaticamente l'utente senza rinfrescare l'applicazione.
 // PASSAGGI LOGICI:
-// 1. In cima al file, importare useState ed useEffect dal pacchetto 'react'.
-// 2. Importare il client supabase dal file di configurazione locale.
-// 3. Collegare il foglio di stile locale './Schede.css'.
+// 1. Importare useState ed useEffect dal modulo 'react'.
+// 2. Importare il client asincrono supabase dal percorso delle librerie del progetto.
+// 3. Estrarre l'hook useNavigate da 'react-router-dom'.
+// 4. Integrare il file di stile locale './Schede.css'.
 // ============================================================================
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 import './Schede.css';
 
 // ============================================================================
-// TAPPA 2: Configurazione degli Stati e Struttura dell'Array Dinamico
-// OBIETTIVO: Dichiarare gli stati applicativi per l'elenco delle schede, i caricamenti di rete e i singoli campi del form di creazione.
+// TAPPA 2: Dichiarazione del Componente e Configurazione degli Stati Reattivi
+// OBIETTIVO: Definire il componente principale Schede e inizializzare le variabili necessarie per gestire l'elenco dei programmi, la creazione e la diagnostica degli errori.
 // TEORIA DA STUDIARE PRIMA:
-// - Gestione di Array nello Stato: Utilizzo di array vuoti `([])` per contenere collezioni di oggetti SQL provenienti dal database.
-// - Array di Stringhe Dinamiche: Inizializzare un array contenente una stringa vuota `([''])` per tracciare righe di input generate a runtime.
+// - Flag di Stato Booleani: Sfruttare valori booleani (true/false) per mostrare o nascondere dinamicamente porzioni di codice (come il form di creazione).
 // PASSAGGI LOGICI:
-// 1. Dichiarare ed esportare il componente principale Schede.
-// 2. Inizializzare gli stati globali per l'elenco schede e il flag booleano loading (attivo di default).
-// 3. Definire gli stati del form: il flag isCreating per la visibilità, le stringhe nomeScheda e descrizione.
-// 4. Configurare lo stato esercizi passandogli come valore di partenza un array con un unico elemento stringa vuoto.
+// 1. Esportare la funzione componente Schede.
+// 2. Configurare gli stati di caricamento ed elenco: schede (array vuoto iniziale) e loading (attivo di default).
+// 3. Impostare i controlli del form: nuovoNome (stringa vuota) e isCreating (booleano false di default).
+// 4. Dichiarare la costante di navigazione istanziando l'hook useNavigate().
 // ============================================================================
 export function Schede() {
   const [schede, setSchede] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  // Stati per il form di nuova scheda
+  const [nuovoNome, setNuovoNome] = useState('');
   const [isCreating, setIsCreating] = useState(false);
-  const [nomeScheda, setNomeScheda] = useState('');
-  const [descrizione, setDescrizione] = useState('');
-  const [esercizi, setEsercizi] = useState(['']); // Array di stringhe per gli esercizi dinamici
+  const [errore, setErrore] = useState('');
+  const navigate = useNavigate();
 
   // ============================================================================
-  // TAPPA 3: Montaggio del Componente e Sincronizzazione Iniziale
-  // OBIETTIVO: Innescare il recupero automatico dei dati dal database nel momento esatto in cui la pagina compare a schermo.
-  // TEORIA DA STUDIARE PRIMA:
-  // - Ciclo di Vita (Mounting): Comprendere l'esecuzione di funzioni asincrone staccate dal rendering sincrono del componente.
+  // TAPPA 3: Sincronizzazione ed Esecuzione dell'Effetto al Montaggio
+  // OBIETTIVO: Sincronizzare il client con la base dati remota per estrarre l'elenco delle schede utente non appena lo schermo è pronto.
   // PASSAGGI LOGICI:
-  // 1. Scrivere un hook useEffect configurando un array di dipendenze vuoto `([])` per limitarne l'attivazione.
-  // 2. All'interno della callback dell'effetto, invocare direttamente la funzione fetchSchede().
+  // 1. Configurare un hook useEffect accoppiato a un array di dipendenze vuoto `([])`.
+  // 2. Chiamare la funzione asincrona caricaSchede() all'interno della callback.
   // ============================================================================
   useEffect(() => {
-    fetchSchede();
+    caricaSchede();
   }, []);
 
   // ============================================================================
-  // TAPPA 4: Recupero Dati Relazionali Avanzato (Join SQL e Ordinamento)
-  // OBIETTIVO: Eseguire una query di lettura sul database per estrarre le schede aggregando in un'unica richiesta le righe collegate della tabella degli esercizi.
+  // TAPPA 4: Query Relazionale Complessa e Sub-Selezione Tabelle Figlie
+  // OBIETTIVO: Recupero asincrono di tutte le routine attive dell'utente, includendo in un'unica richiesta i nomi degli esercizi collegati tramite tabelle di giunzione.
   // TEORIA DA STUDIARE PRIMA:
-  // - Query Relazionali Supabase: Sintassi a stringa multilinea all'interno del metodo `.select()` per definire le join con tabelle figlie (es. `esercizi_scheda(...)`).
-  // - Ordinamento SQL (`.order`): Configurare parametri di inversione cronologica tramite l'oggetto opzionale `{ ascending: false }`.
+  // - Query Relazionali Supabase (Nested Selects): Sfruttare la sintassi a stringa con parentesi tonde per indicare a Supabase di eseguire automaticamente una JOIN e recuperare i dati dalla tabella figlia `routine_exercises`.
+  // - Filtri su valori Nulli (`.is`): Escludere i record archiviati verificando che la colonna `archived_at` sia impostata su NULL.
   // PASSAGGI LOGICI:
-  // 1. Definire la funzione asincrona fetchSchede e attivare lo stato di loading.
-  // 2. Nel blocco try, interrogare la tabella 'schede' selezionando i campi id, nome, descrizione, ed eseguendo l'aggregazione di 'esercizi_scheda'.
-  // 3. Concatenare il modificatore `.order()` sulla colonna 'creato_il'.
-  // 4. Verificare la presenza di errori, aggiornare lo stato schede con l'array estratto e forzare lo spegnimento di loading nel blocco finally.
-  // • Errori da evitare: Omettere i passaggi di cattura nel blocco finally, rischiando di lasciare l'applicazione bloccata in modalità di caricamento se la query fallisce.
+  // 1. Impostare loading su true e recuperare l'ID utente autenticato tramite `supabase.auth.getUser()`.
+  // 2. Interrogare la tabella 'routines', richiedendo i campi id, name, l'intera sotto-tabella 'routine_exercises' e i relativi record correlati di 'exercises'.
+  // 3. Applicare i filtri condizionali per utente, escludere gli elementi archiviati e ordinare per la colonna 'position' in modo ascendente.
   // ============================================================================
-  const fetchSchede = async () => {
+  const caricaSchede = async () => {
     setLoading(true);
     try {
-      // Recupera le schede includendo i rispettivi esercizi associati
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Query relazionale ufficiale sulle tabelle routines e routine_exercises (Pagina 8)
       const { data, error } = await supabase
-        .from('schede')
+        .from('routines')
         .select(`
           id,
-          nome,
-          descrizione,
-          esercizi_scheda (id, nome, ordine)
+          name,
+          routine_exercises (
+            id,
+            position,
+            exercises (name)
+          )
         `)
-        .order('creato_il', { ascending: false });
+        .eq('user_id', user.id)
+        .is('archived_at', null)
+        .order('position', { ascending: true });
 
       if (error) throw error;
       setSchede(data || []);
     } catch (err) {
-      alert("Errore nel recupero delle schede: " + err.message);
+      setErrore('Errore nel recupero dei dati: ' + err.message);
     } finally {
       setLoading(false);
     }
   };
 
   // ============================================================================
-  // TAPPA 5: Manipolazione Immutabile dell'Array di Esercizi Dinamici
-  // OBIETTIVO: Sviluppare le funzioni per aggiungere, modificare o rimuovere singole stringhe dall'array degli esercizi rispettando l'immutabilità dello stato di React.
+  // TAPPA 5: Validazione dei Moduli, Inserimento Singolo e Reindirizzamento Rotta
+  // OBIETTIVO: Validare il nome inserito dall'utente, calcolare la posizione d'ordine progressiva, inserire la riga in archivio e spostarsi sulla pagina di configurazione.
   // TEORIA DA STUDIARE PRIMA:
-  // - Immutabilità dello Stato: Evitare modifiche dirette all'array originale; utilizzare l'operatore spread `([...array])` o metodi non distruttivi come `.filter()`.
-  // - Aggiornamento per Indice: Clonare l'array, sovrascrivere l'elemento nella coordinata target e riassegnare il clone al setter.
+  // - Metodo `.single()` e Clausola `.select()`: Chiedere esplicitamente a Supabase di restituire l'oggetto appena inserito (invece di un array di oggetti), rendendo subito disponibile il suo ID per la navigazione.
   // PASSAGGI LOGICI:
-  // 1. In handleAddEsercizioInput, espandere l'array corrente e accodare una nuova stringa vuota `''`.
-  // 2. In handleEsercizioChange, copiare l'array, individuare l'indice passato, aggiornarne il valore con il testo dell'input e salvare.
-  // 3. In handleRemoveEsercizioInput, aggiungere un controllo di lunghezza minima (maggiore di 1) e usare `.filter()` per escludere l'elemento la cui coordinata corrisponde all'indice target.
+  // 1. Prevenire il refresh nativo del form, pulire gli errori ed effettuare il `.trim()` del testo.
+  // 2. Applicare le regole if client-side: bloccare l'invio se il testo è vuoto o se supera i 40 caratteri di lunghezza massima.
+  // 3. Calcolare la costante `nuovaPosizione` basandosi sulla lunghezza attuale dell'array in memoria (`schede.length + 1`).
+  // 4. Eseguire l'operazione di `.insert()`, richiedere il record con `.select().single()` e usare `navigate()` per reindirizzare alla rotta dinamica `/schede/:id`.
   // ============================================================================
-  const handleAddEsercizioInput = () => {
-    setEsercizi([...esercizi, '']);
-  };
-
-  const handleEsercizioChange = (index, value) => {
-    const nuoviEsercizi = [...esercizi];
-    nuoviEsercizi[index] = value;
-    setEsercizi(nuoviEsercizi);
-  };
-
-  const handleRemoveEsercizioInput = (index) => {
-    if (esercizi.length > 1) {
-      setEsercizi(esercizi.filter((_, i) => i !== index));
-    }
-  };
-
-  // ============================================================================
-  // TAPPA 6: Inserimenti Multipli Consensuali e Transazioni Bulk
-  // OBIETTIVO: Sviluppare la logica di salvataggio per creare la scheda sul database, recuperarne l'ID generato e usarlo immediatamente per inserire in blocco (Bulk Insert) l'elenco degli esercizi associati.
-  // TEORIA DA STUDIARE PRIMA:
-  // - Modificatori di Ritorno (`.select().single()`): Richiedere al database di restituire immediatamente i dati del record appena creato (incluso l'ID auto-generato) sotto forma di oggetto singolo.
-  // - Inserimento Bulk: Inviare a Supabase un array completo di oggetti per effettuare un unico inserimento di rete massivo, riducendo i tempi di latenza.
-  // - Metodo .trim(): Pulizia di spazi bianchi superflui prima dell'invio dei testi SQL.
-  // PASSAGGI LOGICI:
-  // 1. Intercettare l'evento di invio form tramite e.preventDefault() e controllare la validità del nome scheda.
-  // 2. Chiamare supabase.auth.getUser() per prelevare in modo sicuro l'ID dell'utente attivo.
-  // 3. Eseguire l'insert sulla tabella 'schede' passando l'oggetto dati, concatenando `.select().single()` per estrarre la costante nuovaScheda.
-  // 4. Usare `.map()` sull'array degli esercizi per formattare gli oggetti figli iniettando la chiave esterna `scheda_id: nuovaScheda.id` e calcolando la colonna ordine (index + 1).
-  // 5. Filtrare gli elementi con nome vuoto e inviare l'array risultante alla tabella 'esercizi_scheda'.
-  // 6. Resettare tutti i campi del form e rieseguire fetchSchede() per rinfrescare l'interfaccia.
-  // • Errori da evitare: Effettuare inserimenti di esercizi ciclici dentro un ciclo for asincrono, generando decine di richieste HTTP lente e intasando le connessioni di rete.
-  // ============================================================================
-  const handleSubmit = async (e) => {
+  const handleCreaScheda = async (e) => {
     e.preventDefault();
-    if (!nomeScheda.trim()) return;
+    setErrore('');
+    const nomePulito = nuovoNome.trim();
+
+    // Validazione dei moduli (Pagina 22)
+    if (!nomePulito) {
+      setErrore('Il nome della scheda è obbligatorio.');
+      return;
+    }
+    if (nomePulito.length > 40) {
+      setErrore('Il nome della scheda non può superare i 40 caratteri.');
+      return;
+    }
 
     try {
-      // 1. Ottieni l'id dell'utente loggato
       const { data: { user } } = await supabase.auth.getUser();
+      const nuovaPosizione = schede.length + 1;
 
-      // 2. Inserisci la nuova scheda
-      const { data: nuovaScheda, error: schedaError } = await supabase
-        .from('schede')
-        .insert([{ nome: nomeScheda, descrizione, user_id: user.id }])
+      // Inserisce il record principale della routine
+      const { data, error } = await supabase
+        .from('routines')
+        .insert([{
+          user_id: user.id,
+          name: nomePulito,
+          position: nuovaPosizione
+        }])
         .select()
         .single();
 
-      if (schedaError) throw schedaError;
-
-      // 3. Filtra gli esercizi vuoti e prepara il payload per l'inserimento bulk
-      const eserciziFiltrati = esercizi
-        .map((es, index) => ({
-          scheda_id: nuovaScheda.id,
-          nome: es.trim(),
-          ordine: index + 1
-        }))
-        .filter(es => es.nome !== '');
-
-      if (eserciziFiltrati.length > 0) {
-        const { error: eserciziError } = await supabase
-          .from('esercizi_scheda')
-          .insert(eserciziFiltrati);
-        
-        if (eserciziError) throw eserciziError;
-      }
-
-      // Reset del form e rinfresco dati
-      setNomeScheda('');
-      setDescrizione('');
-      setEsercizi(['']);
+      if (error) throw error;
+      
+      setNuovoNome('');
       setIsCreating(false);
-      fetchSchede();
+      
+      // Reindirizzamento immediato alla pagina di modifica parametri (Tappa 4)
+      navigate(`/schede/${data.id}`);
     } catch (err) {
-      alert("Errore nel salvataggio: " + err.message);
+      setErrore(err.message);
     }
   };
 
   // ============================================================================
-  // TAPPA 7: Eliminazione a Cascata sul Database (Cascade Delete)
-// OBIETTIVO: Rimuovere un record specifico dal database in base alla sua chiave primaria, sfruttando i vincoli di eliminazione a cascata configurati sulle tabelle del DB.
-// TEORIA DA STUDIARE PRIMA:
-// - Finestre di Dialogo Native (window.confirm): Bloccare l'azione chiedendo una conferma esplicita all'utente tramite pop-up.
-// - Cancellazione Relazionale (Filtro .eq): Uso del comando .delete().eq('id', id) per rimuovere righe specifiche.
-// PASSAGGI LOGICI:
-// 1. Richiedere la conferma di cancellazione tramite window.confirm().
-// 2. Avviare la chiamata asincrona di eliminazione puntando alla tabella 'schede' e filtrando per l'id selezionato.
-// 3. In caso di successo, invocare fetchSchede() per aggiornare la visualizzazione.
-// ============================================================================
-const handleDeleteScheda = async (id) => {
-if (!window.confirm("Sei sicuro di voler eliminare questa scheda? Questa azione cancellerà anche gli esercizi collegati.")) return;
-try {
-const { error } = await supabase.from('schede').delete().eq('id', id);
-if (error) throw error;
-fetchSchede();
-} catch (err) {
-alert("Errore nell'eliminazione: " + err.message);
-}
-};
-// ============================================================================
-// TAPPA 8: Rendering di Griglie Dati e Ordinamento Client-Side (Array.prototype.sort)
-// OBIETTIVO: Sviluppare il motore JSX per iterare sulle schede scaricate e mostrare le sotto-liste degli esercizi ordinati correttamente per priorità.
-// TEORIA DA STUDIARE PRIMA:
-// - Metodo Array.prototype.sort(): Funzione JavaScript per riordinare gli elementi di un array in base a un criterio numerico di confronto (a.ordine - b.ordine).
-// - Rendering Condizionale Multiplo: Utilizzo del triplo operatore condizionale (loading vs array vuoto vs griglia dati) per mutare completamente la struttura dell'interfaccia.
-// PASSAGGI LOGICI:
-// 1. Verificare lo stato loading e stampare il testo di caricamento.
-// 2. Se loading è falso e la lunghezza di schede è zero, stampare l'interfaccia di stato vuoto (Empty State).
-// 3. Se sono presenti elementi, eseguire il map principale su schede generando i nodi della griglia.
-// 4. All'interno di ogni card, verificare la presenza dell'array figlio ed eseguirne il .sort() numerico sulla proprietà ordine prima di stamparne i tag di lista <li>.
-// • Errori da evitare: Usare il metodo .sort() direttamente sull'array di stato senza accortezze se questo muta l'array originale di React (in questo blocco l'operatore di navigazione opzionale ?. unito al rendering immediato evita l'effetto).
-// ============================================================================
-return (
+  // TAPPA 6: Intercettazione e Blocco della Propagazione degli Eventi (`.stopPropagation`)
+  // OBIETTIVO: Permettere l'eliminazione fisica di una scheda tramite un pulsante annidato senza attivare accidentalmente il click di navigazione della card padre.
+  // TEORIA DA STUDIARE PRIMA:
+  // - Event Bubbling (Propagazione degli Eventi): Fenomeno per cui un evento scatenato su un elemento figlio risale l'albero DOM attivando i gestori del padre. Si neutralizza invocando `e.stopPropagation()`.
+  // PASSAGGI LOGICI:
+  // 1. Invocare immediatamente `preventDefault()` e `stopPropagation()` sull'evento.
+  // 2. Mostrare una finestra di avviso `window.confirm()` prima di avviare la query distruttiva.
+  // 3. Eseguire l'istruzione `.delete()` filtrando per l'ID della scheda e aggiornare l'interfaccia richiamando `caricaSchede()`.
+  // ============================================================================
+  const handleEliminaScheda = async (id, e) => {
+    e.preventDefault();
+    e.stopPropagation(); // Evita di attivare il clic di navigazione della card
+
+    // Messaggio di conferma rassicurante (Pagina 12)
+    if (!window.confirm("Sei sicuro di voler eliminare questa scheda? Lo storico degli allenamenti fatti resta.")) return;
+
+    try {
+      const { error } = await supabase
+        .from('routines')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      caricaSchede();
+    } catch (err) {
+      alert("Errore durante l'eliminazione: " + err.message);
+    }
+  };
+
+    // ============================================================================
+  // TAPPA 7: Rendering del Layout Principale e Gestione dei Form Condizionali
+  // OBIETTIVO: Strutturare il punto di ingresso visivo del componente, implementando l'apertura a scomparsa del form per l'inserimento del nuovo programma.
+  // TEORIA DA STUDIARE PRIMA:
+  // - Operatore Logico Cortocircuito (`&&`): Sintassi reattiva per includere un intero blocco di codice HTML all'interno del DOM soltanto se lo stato di controllo risulta TRUE.
+  // PASSAGGI LOGICI:
+  // 1. Aprire il container principale, inserire l'intestazione e configurare il bottone di apertura form invertendo lo stato booleano (`!isCreating`).
+  // 2. Agganciare il gestore `onSubmit={handleCreaScheda}` al tag form.
+  // 3. Collegare l'attributo `value` dello stato `nuovoNome` e il gestore `onChange` al rispettivo tag d'inserimento testuale.
+  // ============================================================================
+  return (
     <div className="schede-container">
       <div className="header-sezione">
         <h2>Le tue Schede</h2>
-        <button className="btn-add" onClick={() => setIsCreating(!isCreating)}>
-          {isCreating ? 'Chiudi' : 'Nuova Scheda'}
+        <button 
+          type="button" 
+          className="btn-add" 
+          onClick={() => setIsCreating(!isCreating)}
+        >
+          {isCreating ? 'Chiudi' : '➕ Nuova Scheda'}
         </button>
       </div>
 
       {isCreating && (
-        <form onSubmit={handleSubmit} className="scheda-form card">
+        <form onSubmit={handleCreaScheda} className="scheda-form card">
           <h3>Crea Programma</h3>
+          {errore && <div className="schede-alert error">{errore}</div>}
+          
           <div className="form-group">
-            <label>Nome Scheda *</label>
+            <label htmlFor="routine-name">Nome Scheda *</label>
             <input 
+              id="routine-name"
               type="text" 
-              placeholder="es. Spinta (Petto/Spalle/Tricipiti)" 
-              value={nomeScheda} 
-              onChange={e => setNomeScheda(e.target.value)}
+              maxLength={40}
+              placeholder="es. Upper Body, Spinta, Gambe..." 
+              value={nuovoNome} 
+              onChange={e => setNuovoNome(e.target.value)}
               required 
             />
           </div>
-          <div className="form-group">
-            <label>Descrizione / Note</label>
-            <textarea 
-              placeholder="es. Focus progressione sui carichi" 
-              value={descrizione} 
-              onChange={e => setDescrizione(e.target.value)}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Esercizi</label>
-            {esercizi.map((esercizio, index) => (
-              <div key={index} className="esercizio-input-row">
-                <input 
-                  type="text" 
-                  placeholder={`Esercizio ${index + 1}`}
-                  value={esercizio} 
-                  onChange={e => handleEsercizioChange(index, e.target.value)}
-                  required={index === 0}
-                />
-                {esercizi.length > 1 && (
-                  <button type="button" className="btn-remove-line" onClick={() => handleRemoveEsercizioInput(index)}>✕</button>
-                )}
-              </div>
-            ))}
-            <button type="button" className="btn-secondary text-sm" onClick={handleAddEsercizioInput}>
-              + Aggiungi Esercizio
-            </button>
-          </div>
-
-          <button type="submit" className="btn-primary-full">Salva Scheda</button>
+          <button type="submit" className="btn-primary-full">Crea e Configura</button>
         </form>
       )}
 
+      {/* ============================================================================
+          TAPPA 8: Ordinamento ad Array, Mappatura ed Estrazione di Proprietà Annidate
+          OBIETTIVO: Isolare l'elenco degli esercizi associati, ordinarli linearmente secondo l'indice di posizione ed elaborare una stringa unificata di anteprima per ogni scheda.
+          TEORIA DA STUDIARE PRIMA:
+          - Concatenazione e Pulizia di Array (`.filter(Boolean)`): Rimuovere in modo sicuro eventuali valori nulli, indefiniti o vuoti generati da record orfani o query asincrone parziali prima di trasformare i dati.
+          PASSAGGI LOGICI:
+          1. Eseguire un controllo ternario sullo stato `loading` e verificare se l'array `schede` ha lunghezza pari a zero per mostrare l'Empty State.
+          2. Avviare il ciclo `.map()` globale sulla griglia delle schede per generare le relative card cliccabili.
+          3. All'interno del ciclo di ogni scheda, ordinare l'array nidificato `routine_exercises` prendendo come parametro di calcolo `a.position - b.position`.
+          4. Isolare solo i nomi degli esercizi con `.map(re => re.exercises?.name)` ed eliminare i campi inconsistenti usando `.filter(Boolean)`.
+          5. Utilizzare il metodo `.join(', ')` per unire i nomi degli esercizi in un testo separato da virgole da mostrare a schermo.
+          ============================================================================ */}
       {loading ? (
-        <p className="loading-text">Caricamento schede in corso...</p>
+        <p className="loading-text">Sincronizzazione schede in corso...</p>
       ) : schede.length === 0 ? (
         <div className="empty-state card">
-          <p>Non hai ancora creato nessuna scheda di allenamento.</p>
-          <p className="hint">Clicca su "Nuova Scheda" in alto per iniziare a configurare la tua routine!</p>
+          <p>Nessuna scheda: creane una con Nuova scheda, qui sopra.</p>
         </div>
       ) : (
         <div className="schede-grid">
-          {schede.map(scheda => (
-            <div key={scheda.id} className="scheda-card card">
-              <div className="scheda-card-header">
-                <h4>{scheda.nome}</h4>
-                <button className="btn-delete-icon" onClick={() => handleDeleteScheda(scheda.id)}>🗑️</button>
+          {schede.map((scheda) => {
+            // Estrae ed ordina i nomi degli esercizi associati su stringa singola
+            const eserciziAnteprima = (scheda.routine_exercises || [])
+              .sort((a, b) => a.position - b.position)
+              .map(re => re.exercises?.name)
+              .filter(Boolean);
+
+            return (
+              <div 
+                key={scheda.id} 
+                className="scheda-card card"
+                onClick={() => navigate(`/schede/${scheda.id}`)}
+              >
+                <div className="scheda-card-header">
+                  <h4>{scheda.name}</h4>
+                  <button 
+                    type="button" 
+                    className="btn-delete-icon" 
+                    onClick={(e) => handleEliminaScheda(scheda.id, e)}
+                    aria-label={`Elimina scheda ${scheda.name}`}
+                  >
+                    🗑️
+                  </button>
+                </div>
+                
+                <p className="hint">
+                  Esercizi inseriti: <strong>{eserciziAnteprima.length}</strong>
+                </p>
+
+                {eserciziAnteprima.length > 0 && (
+                  <div className="scheda-esercizi-preview">
+                    <p className="preview-text-ellipsis">
+                      {eserciziAnteprima.join(', ')}
+                    </p>
+                  </div>
+                )}
+                
+                <div className="card-footer-action">
+                  <span>Configura parametri ⋯</span>
+                </div>
               </div>
-              {scheda.descrizione && <p className="scheda-desc">{scheda.descrizione}</p>}
-              <div className="scheda-esercizi-preview">
-                <h5>Esercizi inclusi ({scheda.esercizi_scheda?.length || 0}):</h5>
-                <ul>
-                  {scheda.esercizi_scheda?.sort((a,b) => a.ordine - b.ordine).map(es => (
-                    <li key={es.id}>{es.nome}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
   );
 }
-
-

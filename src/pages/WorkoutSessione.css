@@ -1,0 +1,248 @@
+.workout-live-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: 90px;
+}
+
+.workout-live-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.workout-live-header h2 { 
+  margin: 0; 
+  font-size: 1.4rem; 
+}
+
+.badge-live-trapping {
+  background-color: #ff6b6b;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.btn-concludi-workout {
+  background-color: #51cf66;
+  color: #0d0e10;
+  border: none;
+  font-weight: bold;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Menu a scorrimento orizzontale per i bottoni degli esercizi */
+.esercizi-tabs-carousel {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  scrollbar-width: none;
+}
+
+.esercizi-tabs-carousel::-webkit-scrollbar { 
+  display: none; 
+}
+
+.tab-item-btn {
+  flex: 0 0 auto;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tab-item-btn.active {
+  border-color: var(--accent);
+  background-color: rgba(200, 240, 60, 0.05);
+}
+
+.tab-item-btn.completed {
+  background-color: rgba(81, 207, 102, 0.05);
+}
+
+.tab-ex-name { 
+  font-size: 0.9rem; 
+  font-weight: bold; 
+}
+
+.tab-ex-status { 
+  font-size: 0.8rem; 
+  opacity: 0.7; 
+}
+
+.focus-ex-header h3 { 
+  margin: 0 0 6px 0; 
+  color: var(--accent); 
+  font-size: 1.3rem; 
+}
+
+.focus-target-label { 
+  margin: 0; 
+  font-size: 0.9rem; 
+  opacity: 0.8; 
+}
+
+.focus-history-label { 
+  margin: 6px 0 0 0; 
+  font-size: 0.85rem; 
+  opacity: 0.6; 
+}
+
+.history-values { 
+  font-style: italic; 
+  color: var(--text); 
+}
+
+.live-set-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  margin-bottom: 8px;
+  background-color: var(--card);
+}
+
+.set-index-badge {
+  width: 26px;
+  height: 26px;
+  background-color: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.w-badge { 
+  background-color: #f59f00; 
+  color: #0d0e10; 
+}
+
+.set-data-text { 
+  flex: 1; 
+  margin-left: 12px; 
+  font-size: 1rem; 
+}
+
+.btn-delete-set-row { 
+  background: none; 
+  border: none; 
+  color: #ff6b6b; 
+  cursor: pointer; 
+  font-size: 1.1rem; 
+}
+
+.type-toggle-row {
+  display: flex;
+  background-color: var(--bg);
+  padding: 4px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+}
+
+.type-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text);
+  padding: 8px;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.type-btn.active { 
+  background-color: var(--accent-fill); 
+  color: var(--on-accent); 
+}
+
+.type-btn.w-active { 
+  background-color: #f59f00; 
+  color: #0d0e10; 
+}
+
+.numeric-stepper-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.stepper-field label { 
+  font-size: 0.8rem; 
+  text-transform: uppercase; 
+  opacity: 0.7; 
+  display: block; 
+  margin-bottom: 6px; 
+}
+
+.stepper-controls { 
+  display: flex; 
+  border: 1px solid var(--border); 
+  border-radius: 6px; 
+  overflow: hidden; 
+  background-color: var(--bg); 
+}
+
+.stepper-controls button {
+  width: 40px;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.stepper-controls input {
+  flex: 1;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text);
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 8px 0;
+}
+
+.stepper-controls input:focus { 
+  outline: none; 
+}
+
+.input-group-note input {
+  width: 100%;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  margin-bottom: 14px;
+}
+
+.btn-submit-set-row {
+  background-color: var(--accent-fill);
+  color: var(--on-accent);
+  border: none;
+  width: 100%;
+  padding: 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+}

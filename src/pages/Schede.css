@@ -1,6 +1,8 @@
 .schede-container {
   max-width: 600px;
   margin: 0 auto;
+  padding: 16px;
+  padding-bottom: 80px;
 }
 
 .header-sezione {
@@ -23,6 +25,7 @@
   border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
+  font-size: 0.95rem;
 }
 
 .card {
@@ -31,6 +34,18 @@
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
+}
+
+.scheda-form {
+  border-color: var(--accent) !important;
+}
+
+.scheda-form h3 {
+  margin-top: 0;
+  margin-bottom: 14px;
+  font-size: 1.1rem;
+  color: var(--accent);
+  text-transform: uppercase;
 }
 
 .form-group {
@@ -46,48 +61,23 @@
   opacity: 0.8;
 }
 
-.form-group input, .form-group textarea {
+.form-group input {
   background-color: var(--bg);
   border: 1px solid var(--border);
   color: var(--text);
-  padding: 10px;
+  padding: 12px;
   border-radius: 6px;
   font-size: 1rem;
 }
 
-.esercizio-input-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.esercizio-input-row input {
-  flex: 1;
-}
-
-.btn-remove-line {
-  background-color: rgba(255, 0, 0, 0.1);
-  color: #ff6b6b;
-  border: 1px solid rgba(255, 0, 0, 0.2);
-  border-radius: 6px;
-  width: 40px;
-  cursor: pointer;
-}
-
-.btn-secondary {
-  background-color: transparent;
-  color: var(--accent);
-  border: 1px solid var(--accent);
-  padding: 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 4px;
+.form-group input:focus {
+  outline: none;
+  border-color: var(--accent);
 }
 
 .btn-primary-full {
-  background-color: var(--accent-fill);
-  color: var(--on-accent);
+  background-color: var(--text);
+  color: var(--bg);
   border: none;
   width: 100%;
   padding: 12px;
@@ -95,12 +85,26 @@
   font-weight: bold;
   font-size: 1rem;
   cursor: pointer;
-  margin-top: 10px;
 }
 
-.loading-text, .hint {
+.schede-alert {
+  padding: 10px;
+  border-radius: 6px;
   font-size: 0.9rem;
-  opacity: 0.7;
+  margin-bottom: 12px;
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+.scheda-card {
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: transform 0.1s ease;
+}
+
+.scheda-card:active {
+  transform: scale(0.99);
 }
 
 .scheda-card-header {
@@ -120,27 +124,36 @@
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
+  padding: 2px 6px;
 }
 
-.scheda-desc {
-  font-size: 0.95rem;
-  opacity: 0.8;
-  margin: 6px 0 12px 0;
+.scheda-esercizi-preview {
+  background-color: var(--bg);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
-.scheda-esercizi-preview h5 {
-  margin: 0 0 6px 0;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  opacity: 0.7;
-}
-
-.scheda-esercizi-preview ul {
+.preview-text-ellipsis {
   margin: 0;
-  padding-left: 20px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Vincolo grafico: massimo due righe visive */
+  display: block;
 }
 
-.scheda-esercizi-preview li {
-  margin-bottom: 4px;
+.card-footer-action {
+  font-size: 0.8rem;
+  opacity: 0.5;
+  text-align: right;
+}
+
+.loading-text, .empty-state card {
+  text-align: center;
+  opacity: 0.7;
+  margin-top: 20px;
 }

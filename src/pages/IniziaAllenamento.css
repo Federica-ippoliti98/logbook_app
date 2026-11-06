@@ -1,0 +1,116 @@
+.inizia-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: 80px;
+}
+
+.header-inizia {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.btn-back-home {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.header-inizia h2 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.subtitle-inizia {
+  opacity: 0.7;
+  margin-bottom: 24px;
+  font-size: 0.95rem;
+}
+
+.opzioni-allenamento-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.start-workout-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.start-workout-card h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.25rem;
+}
+
+.card-left-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-left-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+
+.badge-conclusa {
+  background-color: #51cf66;
+  color: #0d0e10;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+  width: fit-content;
+}
+
+.badge-live {
+  background-color: var(--accent-fill);
+  color: var(--on-accent);
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+  width: fit-content;
+}
+
+.conclusa-border {
+  border-color: #51cf66 !important;
+}
+
+.btn-go-workout {
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.start-workout-card:hover .btn-go-workout {
+  background-color: var(--accent-fill);
+  color: var(--on-accent);
+  border-color: var(--accent-fill);
+}
+
+.libero-separator {
+  text-align: center;
+  opacity: 0.4;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  margin: 12px 0;
+  letter-spacing: 1px;
+}
+
+.libero-card {
+  border-style: dashed !important;
+}

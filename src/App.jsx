@@ -18,77 +18,16 @@ import { Schede } from './pages/Schede';
 import { RestTimerProvider } from './context/RestTimerContext';
 import { Dashboard } from './pages/Dashboard';
 import { Storico } from './pages/Storico';
+import { AnalisiIA } from './pages/AnalisiIA';
+import { Profilo } from './pages/Profilo';
+import { Esercizi } from './pages/Esercizi';
+import { ModificaScheda } from './pages/ModificaScheda';
+import { IniziaAllenamento } from './pages/IniziaAllenamento';
+import { WorkoutSessione } from './pages/WorkoutSessione';
 
 
 
 
-// ============================================================================
-// TAPPA 2: Dichiarazione dei Componenti Segnaposto (Mock Components)
-// OBIETTIVO: Creare viste temporanee isolate per testare la navigazione prima di implementare le pagine reali.
-// TEORIA DA STUDIARE PRIMA:
-// - Presentational Components: Funzioni pure che si occupano unicamente di renderizzare markup statico o di test.
-// PASSAGGI LOGICI:
-// 1. Creare i componenti freccia per Login, Dashboard, Storico, Schede e AnalisiIA che ritornano semplici tag testuali.
-// ============================================================================
-// Componenti segnaposto temporanei per i test
-
-
-
-const AnalisiIA = () => <h2>Analisi Avanzata IA</h2>;
-
-// ============================================================================
-// TAPPA 3: Implementazione della Pagina Profilo con Consumo del Tema
-// OBIETTIVO: Sviluppare una vista interattiva capace di agganciarsi al contesto del tema per effettuarne lo switch al click.
-// TEORIA DA STUDIARE PRIMA:
-// - Consumo e Interazione con i Contesti: Integrare funzioni reattive globali (toggleTheme) su eventi DOM locali (onClick).
-// - Variabili CSS Globale (var): Utilizzo di token di design flessibili (es. --accent-fill) che cambiano automaticamente al mutare del tema sulla radice.
-// PASSAGGI LOGICI:
-// 1. Creare il componente Profilo e consumare useTheme al suo interno estrando "theme" e "toggleTheme".
-// 2. Associare all'evento onClick del pulsante l'esecuzione di toggleTheme.
-// 3. Usare l'operatore ternario nel testo del pulsante per mostrare dinamicamente la stringa corretta basata sullo stato del tema.
-// ============================================================================
-const Profilo = () => {
-  const { theme, toggleTheme } = useTheme();
-  
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-  };
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <h2>Profilo Utente</h2>
-      
-      <button 
-        onClick={toggleTheme} 
-        style={{
-          background: 'var(--card)', 
-          color: 'var(--text)', 
-          border: '1px solid var(--border)', 
-          padding: '12px', 
-          borderRadius: '6px',
-          cursor: 'pointer'
-        }}
-      >
-        Passa a tema {theme === 'dark' ? 'Chiaro' : 'Scuro'}
-      </button>
-
-      <button 
-        onClick={handleLogout} 
-        style={{
-          background: '#ff6b6b', 
-          color: '#fff', 
-          border: 'none', 
-          padding: '12px', 
-          borderRadius: '6px',
-          cursor: 'pointer',
-          fontWeight: 'bold'
-        }}
-      >
-        Disconnetti / Esci
-      </button>
-    </div>
-  );
-};
 
 
 // ============================================================================
@@ -134,6 +73,13 @@ export default function App() {
                 <Route path="schede" element={<Schede />} />
                 <Route path="analisi" element={<AnalisiIA />} />
                 <Route path="profilo" element={<Profilo />} />
+                <Route path="esercizi" element={<Esercizi />} />
+                <Route path="schede/:id" element={<ModificaScheda />} />
+                <Route path="inizia" element={<IniziaAllenamento />} />
+                <Route path="allenamento/:id" element={<WorkoutSessione />} />
+
+
+
               </Route>
             </Routes>
           </BrowserRouter>
